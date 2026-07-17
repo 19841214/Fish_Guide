@@ -1,0 +1,1559 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fish Traffic Light | Bilingual Study & Field Trip Portal</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts: Inter & Noto Sans TC -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Noto+Sans+TC:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'Noto Sans TC', 'sans-serif'],
+                    },
+                    colors: {
+                        ocean: {
+                            50: '#f0f9ff',
+                            100: '#e0f2fe',
+                            200: '#bae6fd',
+                            400: '#38bdf8',
+                            500: '#0ea5e9',
+                            800: '#075985',
+                            900: '#0c4a6e',
+                            950: '#031b2e',
+                        },
+                        traffic: {
+                            green: '#10b981',
+                            yellow: '#f59e0b',
+                            red: '#ef4444'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #031b2e;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #0ea5e9;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #38bdf8;
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+        .float-animation {
+            animation: float 6s ease-in-out infinite;
+        }
+    </style>
+</head>
+<body class="bg-ocean-950 text-slate-100 font-sans min-h-screen flex flex-col selection:bg-ocean-500 selection:text-white">
+
+    <header class="border-b border-ocean-900 bg-ocean-950/90 backdrop-blur-md sticky top-0 z-50 transition-all">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+            <!-- Double click on this logo container to trigger secret configuration -->
+            <div class="flex items-center space-x-3 cursor-pointer select-none" ondblclick="toggleSecretConfig()">
+                <div class="bg-gradient-to-tr from-ocean-500 to-emerald-400 p-2 rounded-xl shadow-lg shadow-ocean-500/20">
+                    <i class="fa-solid fa-fish-fins text-white text-lg animate-pulse"></i>
+                </div>
+                <div>
+                    <span class="text-base sm:text-lg font-black tracking-wider bg-gradient-to-r from-white via-ocean-100 to-ocean-300 bg-clip-text text-transparent block" id="nav-title-en">Fish Traffic Light Study Guide</span>
+                    <span class="text-[10px] text-ocean-400 block -mt-1" id="nav-title-zh">魚類紅綠燈雙語指南與實地探訪 (Bilingual)</span>
+                </div>
+            </div>
+            
+            <div class="flex items-center space-x-3">
+                <!-- Database Sync Indicator -->
+                <div class="hidden sm:flex items-center bg-ocean-900/60 border border-ocean-800 rounded-full px-3 py-1 text-xs text-ocean-300 space-x-2">
+                    <span id="sync-dot" class="w-2 h-2 rounded-full bg-amber-500 animate-pulse"></span>
+                    <span id="sync-status">Connecting to Cloud Database...</span>
+                </div>
+
+                <!-- Language Toggle Button -->
+                <button id="lang-toggle" onclick="toggleLanguage()" class="bg-ocean-900 hover:bg-ocean-800 border border-ocean-800 px-3 py-1.5 rounded-xl text-xs font-medium transition-all text-ocean-200 flex items-center space-x-1">
+                    <i class="fa-solid fa-globe text-ocean-400"></i>
+                    <span id="lang-btn-text">繁體中文</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <section class="relative overflow-hidden bg-gradient-to-b from-ocean-950 via-ocean-900/30 to-ocean-950 py-10">
+        <div class="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,rgba(14,165,233,0.12),transparent_50%)]"></div>
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 text-center">
+            <span class="inline-flex items-center px-3 py-1 rounded-full text-[10px] font-semibold bg-ocean-500/10 text-ocean-400 border border-ocean-500/20 mb-3 tracking-wider uppercase">
+                <i class="fa-solid fa-earth-asia mr-1.5"></i> Bilingual Science & Society Project
+            </span>
+            <h1 class="text-3xl sm:text-4xl md:text-5xl font-black tracking-tight mb-2 text-white" id="hero-title">
+                Think <span class="bg-gradient-to-r from-emerald-400 via-amber-400 to-rose-400 bg-clip-text text-transparent">Traffic Lights</span> Before Eating Seafood
+            </h1>
+            <p class="text-xs sm:text-sm md:text-base text-ocean-200 max-w-2xl mx-auto font-light leading-relaxed mb-6" id="hero-subtitle">
+                Learn which fish are sustainable (Green), caution-worthy (Yellow), or should be avoided (Red). Protect our blue planet while exploring local fish vendors!
+            </p>
+
+            <!-- Quick Stats Indicator Dashboard -->
+            <div class="inline-flex gap-4 sm:gap-6 bg-ocean-900/30 border border-ocean-800 px-6 py-2.5 rounded-2xl backdrop-blur-sm">
+                <div class="text-center">
+                    <span class="block text-[10px] text-emerald-400 font-bold" id="lbl-green">Green</span>
+                    <span class="text-lg font-black text-white" id="count-green">0</span>
+                </div>
+                <div class="border-r border-ocean-800 my-1"></div>
+                <div class="text-center">
+                    <span class="block text-[10px] text-amber-400 font-bold" id="lbl-yellow">Yellow</span>
+                    <span class="text-lg font-black text-white" id="count-yellow">0</span>
+                </div>
+                <div class="border-r border-ocean-800 my-1"></div>
+                <div class="text-center">
+                    <span class="block text-[10px] text-rose-400 font-bold" id="lbl-red">Red</span>
+                    <span class="text-lg font-black text-white" id="count-red">0</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-6">
+        <div class="flex border-b border-ocean-900 overflow-x-auto">
+            <button onclick="switchTab('directory')" id="tab-directory" class="px-6 py-3 font-bold border-b-2 border-ocean-500 text-ocean-400 text-xs sm:text-sm flex items-center space-x-2 shrink-0 transition-all">
+                <i class="fa-solid fa-table-list"></i>
+                <div>
+                    <p class="font-black text-left leading-none">Seafood Directory</p>
+                    <span class="text-[9px] text-ocean-500 font-normal">海鮮指南目錄</span>
+                </div>
+            </button>
+            <button onclick="switchTab('quiz')" id="tab-quiz" class="px-6 py-3 font-bold border-b-2 border-transparent text-ocean-500 text-xs sm:text-sm flex items-center space-x-2 shrink-0 hover:text-ocean-300 transition-all">
+                <i class="fa-solid fa-gamepad"></i>
+                <div>
+                    <p class="font-black text-left leading-none">Sustainability Quiz</p>
+                    <span class="text-[9px] text-ocean-500 font-normal">保護知識挑戰</span>
+                </div>
+            </button>
+            <button onclick="switchTab('assignment')" id="tab-assignment" class="px-6 py-3 font-bold border-b-2 border-transparent text-ocean-500 text-xs sm:text-sm flex items-center space-x-2 shrink-0 hover:text-ocean-300 transition-all relative">
+                <i class="fa-solid fa-clipboard-question"></i>
+                <div>
+                    <p class="font-black text-left leading-none">Field Trip Assignment</p>
+                    <span class="text-[9px] text-ocean-500 font-normal">實地探訪作業</span>
+                </div>
+                <span class="absolute top-1.5 right-1 w-2.5 h-2.5 bg-sky-400 rounded-full animate-bounce"></span>
+            </button>
+        </div>
+    </div>
+
+    <main class="flex-grow max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-20 w-full">
+        
+        <!-- ================== SECTION 1: SEAFOOD DIRECTORY ================== -->
+        <div id="section-directory" class="space-y-6">
+            <!-- Search & Filters -->
+            <div class="flex flex-col lg:flex-row gap-4 bg-ocean-900/20 p-4 rounded-2xl border border-ocean-800">
+                <div class="relative flex-grow">
+                    <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-ocean-500">
+                        <i class="fa-solid fa-magnifying-glass"></i>
+                    </span>
+                    <input type="text" id="search-input" oninput="filterFish()" placeholder="Search by English or Chinese name / 搜尋中英文品名..." class="w-full bg-ocean-950 border border-ocean-800 focus:border-ocean-500 focus:ring-1 focus:ring-ocean-500 rounded-xl pl-10 pr-4 py-3 text-xs sm:text-sm text-white placeholder-ocean-600 outline-none transition-all">
+                </div>
+                
+                <div class="flex flex-wrap items-center gap-2">
+                    <button onclick="setFilter('all')" id="filter-all" class="px-4 py-2 rounded-xl text-xs font-bold transition-all border bg-ocean-500 text-white border-ocean-500">
+                        All / 全部 (<span id="total-badge">0</span>)
+                    </button>
+                    <button onclick="setFilter('green')" id="filter-green" class="px-4 py-2 rounded-xl text-xs font-semibold transition-all border bg-ocean-900/50 text-emerald-400 border-emerald-500/30 hover:border-emerald-500/60">
+                        Recommend / 建議 (Green)
+                    </button>
+                    <button onclick="setFilter('yellow')" id="filter-yellow" class="px-4 py-2 rounded-xl text-xs font-semibold transition-all border bg-ocean-900/50 text-amber-400 border-amber-500/30 hover:border-amber-500/60">
+                        Think Twice / 斟酌 (Yellow)
+                    </button>
+                    <button onclick="setFilter('red')" id="filter-red" class="px-4 py-2 rounded-xl text-xs font-semibold transition-all border bg-ocean-900/50 text-rose-400 border-rose-500/30 hover:border-rose-500/60">
+                        Avoid / 避免 (Red)
+                    </button>
+                </div>
+            </div>
+
+            <!-- Loader View -->
+            <div id="loader-view" class="py-20 text-center flex flex-col items-center justify-center space-y-4">
+                <div class="inline-block animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 border-ocean-500"></div>
+                <div>
+                    <p class="text-ocean-300 font-medium text-xs sm:text-sm" id="load-msg">Loading seafood database... / 正在讀取雲端資料...</p>
+                    <p class="text-[10px] text-ocean-500 mt-1">If loading takes too long, offline database will start automatically.</p>
+                </div>
+            </div>
+
+            <!-- Fish Cards Grid -->
+            <div id="fish-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- Dynamically populated -->
+            </div>
+        </div>
+
+        <!-- ================== SECTION 2: SUSTAINABILITY QUIZ ================== -->
+        <div id="section-quiz" class="hidden max-w-2xl mx-auto">
+            <div class="bg-gradient-to-br from-ocean-900/50 to-ocean-950/80 border border-ocean-800 rounded-3xl p-6 sm:p-8 shadow-2xl">
+                <!-- Quiz Intro -->
+                <div id="quiz-intro" class="text-center py-6">
+                    <div class="w-16 h-16 bg-ocean-500/10 border border-ocean-500/20 text-ocean-400 rounded-full flex items-center justify-center text-3xl mx-auto mb-4 float-animation">
+                        <i class="fa-solid fa-gamepad"></i>
+                    </div>
+                    <h3 class="text-xl sm:text-2xl font-black text-white">Ocean Guardian Quiz</h3>
+                    <p class="text-[10px] sm:text-xs text-ocean-400 tracking-wider -mt-1 uppercase">海洋守護者問答挑戰</p>
+                    <p class="text-xs text-ocean-300 mt-4 mb-8 max-w-md mx-auto leading-relaxed">
+                        Can you assign the correct conservation traffic light to random seafood species? Test your sustainable shopping wisdom!
+                        <span class="block mt-1 text-[10px] text-ocean-500">(你能正確為隨機挑選的海鮮亮起環保紅綠燈嗎？快來測試你的永續採購知識！)</span>
+                    </p>
+                    <button onclick="startQuiz()" class="px-8 py-3 bg-gradient-to-r from-ocean-500 to-sky-600 hover:from-ocean-400 hover:to-sky-500 text-white text-xs font-bold rounded-xl shadow-lg active:scale-95 transition-all">
+                        Start Quiz Challenge / 開始挑戰
+                    </button>
+                </div>
+
+                <!-- Active Quiz -->
+                <div id="quiz-gameplay" class="hidden space-y-6">
+                    <div class="flex items-center justify-between border-b border-ocean-800/60 pb-3">
+                        <div class="text-xs text-ocean-400 font-bold">
+                            Score / 得分: <span id="quiz-score" class="text-emerald-400 text-sm font-black">0</span>
+                        </div>
+                        <div class="text-xs text-ocean-400 font-bold bg-ocean-900 px-3 py-1 rounded-full border border-ocean-800">
+                            Question / 題目: <span id="quiz-current-idx">1</span>/5
+                        </div>
+                    </div>
+
+                    <div class="flex flex-col items-center text-center">
+                        <div class="w-48 h-32 rounded-xl overflow-hidden bg-ocean-950 border border-ocean-800 shadow-inner mb-4">
+                            <img id="quiz-fish-image" src="" alt="Fish" class="w-full h-full object-cover">
+                        </div>
+                        <h4 id="quiz-fish-name-en" class="text-xl font-black text-white">---</h4>
+                        <p id="quiz-fish-name-zh" class="text-xs text-ocean-400 italic">---</p>
+                    </div>
+
+                    <div class="space-y-3">
+                        <div class="text-xs text-ocean-300 text-center mb-1">Select the correct traffic light color / 請選擇對應的保護燈號：</div>
+                        <div class="grid grid-cols-3 gap-3">
+                            <button id="quiz-btn-green" onclick="submitQuizAnswer('green')" class="py-3 rounded-xl bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/30 text-emerald-400 text-xs font-bold flex flex-col items-center justify-center gap-1 active:scale-95 transition-all">
+                                <span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span>
+                                <span>Green / 綠燈</span>
+                            </button>
+                            <button id="quiz-btn-yellow" onclick="submitQuizAnswer('yellow')" class="py-3 rounded-xl bg-amber-500/10 hover:bg-amber-500/20 border border-amber-500/30 text-amber-400 text-xs font-bold flex flex-col items-center justify-center gap-1 active:scale-95 transition-all">
+                                <span class="w-2.5 h-2.5 rounded-full bg-amber-500"></span>
+                                <span>Yellow / 黃燈</span>
+                            </button>
+                            <button id="quiz-btn-red" onclick="submitQuizAnswer('red')" class="py-3 rounded-xl bg-rose-500/10 hover:bg-rose-500/20 border border-rose-500/30 text-rose-400 text-xs font-bold flex flex-col items-center justify-center gap-1 active:scale-95 transition-all">
+                                <span class="w-2.5 h-2.5 rounded-full bg-rose-500"></span>
+                                <span>Red / 紅燈</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Feedback Panel -->
+                    <div id="quiz-feedback" class="hidden rounded-xl p-4 border transition-all">
+                        <div class="flex items-start space-x-3">
+                            <div id="feedback-icon" class="text-xl mt-0.5"></div>
+                            <div>
+                                <h5 id="feedback-title" class="font-extrabold text-sm">---</h5>
+                                <div id="feedback-desc" class="text-xs text-slate-200 mt-1 leading-relaxed">---</div>
+                            </div>
+                        </div>
+                        <div class="mt-4 flex justify-end">
+                            <button onclick="nextQuizQuestion()" class="px-4 py-2 bg-ocean-500 hover:bg-ocean-400 text-white rounded-lg text-xs font-bold transition-all flex items-center space-x-1">
+                                <span>Next / 下一題</span> <i class="fa-solid fa-arrow-right text-[10px]"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Quiz Results -->
+                <div id="quiz-results" class="hidden text-center py-6">
+                    <div id="quiz-trophy" class="text-4xl mb-3 text-amber-400 animate-bounce">
+                        <i class="fa-solid fa-trophy"></i>
+                    </div>
+                    <h3 class="text-xl font-black text-white">Quiz Completed! 挑戰結束！</h3>
+                    <p class="text-xs text-ocean-300 mt-2 mb-6">
+                        Your Score / 你的得分： <span id="quiz-final-score" class="text-2xl font-black text-emerald-400">0</span> / 100
+                    </p>
+                    <div id="quiz-summary-desc" class="bg-ocean-950/60 border border-ocean-800 rounded-xl p-4 max-w-md mx-auto mb-6 text-xs text-ocean-200 leading-relaxed">
+                        ---
+                    </div>
+                    <div class="flex gap-2 justify-center">
+                        <button onclick="startQuiz()" class="px-5 py-2.5 bg-gradient-to-r from-ocean-500 to-sky-600 text-white text-xs font-bold rounded-lg transition-all">
+                            Try Again / 再試一次
+                        </button>
+                        <button onclick="switchTab('directory')" class="px-5 py-2.5 bg-ocean-900 border border-ocean-800 text-ocean-300 text-xs font-bold rounded-lg transition-all">
+                            Directory / 返回目錄
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ================== SECTION 3: FIELD TRIP ASSIGNMENT ================== -->
+        <div id="section-assignment" class="hidden max-w-3xl mx-auto">
+            <div class="bg-gradient-to-br from-ocean-900/40 to-ocean-950/80 border border-ocean-800 rounded-3xl p-6 sm:p-8 shadow-2xl">
+                <div class="mb-6 border-b border-ocean-900 pb-4">
+                    <h3 class="text-xl sm:text-2xl font-black text-white">Fish Market Discovery Report</h3>
+                    <p class="text-[10px] sm:text-xs text-ocean-400 tracking-wider -mt-0.5 uppercase">實地探訪魚販永續報告表單 (Bilingual EMI)</p>
+                </div>
+
+                <!-- Progress Wizard Header -->
+                <div class="grid grid-cols-5 gap-1 text-center mb-8">
+                    <div id="step-dot-1" class="py-1 border-b-4 border-ocean-500 text-[10px] font-black text-white transition-all">1. Profile</div>
+                    <div id="step-dot-2" class="py-1 border-b-4 border-ocean-900 text-[10px] font-bold text-ocean-500 transition-all">2. Photo</div>
+                    <div id="step-dot-3" class="py-1 border-b-4 border-ocean-900 text-[10px] font-bold text-ocean-500 transition-all">3. Check</div>
+                    <div id="step-dot-4" class="py-1 border-b-4 border-ocean-900 text-[10px] font-bold text-ocean-500 transition-all">4. Interview</div>
+                    <div id="step-dot-5" class="py-1 border-b-4 border-ocean-900 text-[10px] font-bold text-ocean-500 transition-all">5. Review</div>
+                </div>
+
+                <!-- Form Wizard Content -->
+                <form id="assignment-form" onsubmit="handleFormSubmit(event)" class="space-y-6">
+                    
+                    <!-- STEP 1: Student Profile -->
+                    <div id="form-step-1" class="space-y-4">
+                        <div class="bg-ocean-950/40 p-4 rounded-xl border border-ocean-900 mb-4">
+                            <h4 class="text-sm font-bold text-ocean-300 flex items-center space-x-1.5 mb-1">
+                                <i class="fa-solid fa-id-card"></i>
+                                <span>Student Profile / 學生基本資料</span>
+                            </h4>
+                            <p class="text-[10px] text-ocean-500">Please enter your class, name, and seat number to begin your assignment report.</p>
+                        </div>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <div>
+                                <label class="block text-xs font-bold text-ocean-200 mb-1">Class / 班級 <span class="text-rose-500">*</span></label>
+                                <input type="text" id="student-class" required placeholder="e.g. Class 702" class="w-full bg-ocean-950 border border-ocean-800 rounded-lg p-2.5 text-xs text-white focus:border-ocean-500 focus:ring-1 focus:ring-ocean-500 outline-none">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-ocean-200 mb-1">Name / 姓名 <span class="text-rose-500">*</span></label>
+                                <input type="text" id="student-name" required placeholder="e.g. Tony Lin" class="w-full bg-ocean-950 border border-ocean-800 rounded-lg p-2.5 text-xs text-white focus:border-ocean-500 focus:ring-1 focus:ring-ocean-500 outline-none">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-ocean-200 mb-1">Seat Number / 座號 <span class="text-rose-500">*</span></label>
+                                <input type="number" id="student-seat" required min="1" max="100" placeholder="e.g. 15" class="w-full bg-ocean-950 border border-ocean-800 rounded-lg p-2.5 text-xs text-white focus:border-ocean-500 focus:ring-1 focus:ring-ocean-500 outline-none">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- STEP 2: Photo Upload & Description -->
+                    <div id="form-step-2" class="hidden space-y-4">
+                        <div class="bg-ocean-950/40 p-4 rounded-xl border border-ocean-900 mb-2">
+                            <h4 class="text-sm font-bold text-ocean-300 flex items-center space-x-1.5 mb-1">
+                                <i class="fa-solid fa-camera"></i>
+                                <span>Field Visit Photo & Findings / 實地探訪相片與發現</span>
+                            </h4>
+                            <p class="text-[10px] text-ocean-500">Upload a picture of the fish vendor/market you visited (it will be automatically compressed to save data), and write down which fish varieties you spotted.</p>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 items-start">
+                            <!-- Photo Selector with Canvas compression -->
+                            <div class="border-2 border-dashed border-ocean-800 hover:border-ocean-500 rounded-xl p-4 flex flex-col items-center justify-center bg-ocean-950/30 text-center min-h-[180px] transition-all">
+                                <input type="file" id="photo-upload" accept="image/*" class="hidden" onchange="previewAndCompressImage(event)">
+                                <label for="photo-upload" class="cursor-pointer flex flex-col items-center justify-center w-full h-full">
+                                    <div id="upload-placeholder" class="space-y-2 py-4">
+                                        <i class="fa-solid fa-cloud-arrow-up text-3xl text-ocean-500"></i>
+                                        <p class="text-xs font-bold text-ocean-200">Click to upload photo / 點擊上傳魚攤照片</p>
+                                        <p class="text-[10px] text-ocean-500">Auto compressed (Saves internet speed & data)</p>
+                                    </div>
+                                    <div id="photo-preview-container" class="hidden relative w-full max-h-48 rounded-lg overflow-hidden border border-ocean-800">
+                                        <img id="photo-preview" src="" alt="Student upload preview" class="w-full h-auto object-contain bg-ocean-950">
+                                        <span id="compression-badge" class="absolute top-2 right-2 bg-emerald-500/90 text-slate-950 rounded px-2 py-0.5 text-[9px] font-black">Compressed</span>
+                                    </div>
+                                </label>
+                            </div>
+
+                            <!-- Discovery Note -->
+                            <div class="space-y-2">
+                                <label class="block text-xs font-bold text-ocean-200">What did you find there? / 現場發現與探訪筆記 <span class="text-rose-500">*</span></label>
+                                <textarea id="market-description" required rows="6" placeholder="Describe the market and the stall you visited. (e.g. I visited the Nanmen Market. The fish stall had ice beds showing various fishes... / 敘述你探訪的市場，以及攤位上你看到了什麼？)" class="w-full bg-ocean-950 border border-ocean-800 rounded-lg p-2.5 text-xs text-white focus:border-ocean-500 focus:ring-1 focus:ring-ocean-500 outline-none leading-relaxed"></textarea>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- STEP 3: Fish Checklist & Manual Input -->
+                    <div id="form-step-3" class="hidden space-y-4">
+                        <div class="bg-ocean-950/40 p-4 rounded-xl border border-ocean-900">
+                            <h4 class="text-sm font-bold text-ocean-300 flex items-center space-x-1.5 mb-1">
+                                <i class="fa-solid fa-clipboard-check"></i>
+                                <span>Fish Checklist / 勾選攤販販售的魚</span>
+                            </h4>
+                            <p class="text-[10px] text-ocean-500">Select any fish varieties listed in our directory that you spotted at the stall. If they have other fishes, list them below manually.</p>
+                        </div>
+
+                        <!-- Scrollable Checkbox Grid -->
+                        <div>
+                            <span class="block text-xs font-bold text-ocean-200 mb-2">Check the listed fish / 勾選名單中的魚：</span>
+                            <div id="step-checklist-container" class="grid grid-cols-2 sm:grid-cols-3 gap-2 max-h-48 overflow-y-auto p-2 bg-ocean-950 border border-ocean-800 rounded-xl">
+                                <!-- Populated dynamically based on allFishData -->
+                            </div>
+                        </div>
+
+                        <!-- Manual Text Input -->
+                        <div class="space-y-1.5 pt-2">
+                            <label class="block text-xs font-bold text-ocean-200">Did they sell other fish? List them / 手動輸入名單中未列出的魚：</label>
+                            <input type="text" id="other-fishes-input" placeholder="e.g. Catfish, White Pomfret (白鯧)..." class="w-full bg-ocean-950 border border-ocean-800 rounded-lg p-2.5 text-xs text-white focus:border-ocean-500 focus:ring-1 focus:ring-ocean-500 outline-none">
+                            <p class="text-[9px] text-ocean-500">Separate multiple fish varieties with a comma (,)</p>
+                        </div>
+                    </div>
+
+                    <!-- STEP 4: Interview Mom -->
+                    <div id="form-step-4" class="hidden space-y-4">
+                        <div class="bg-ocean-950/40 p-4 rounded-xl border border-ocean-900 mb-2">
+                            <h4 class="text-sm font-bold text-ocean-300 flex items-center space-x-1.5 mb-1">
+                                <i class="fa-solid fa-house"></i>
+                                <span>Interview Mom / 訪問媽媽最常煮的魚</span>
+                            </h4>
+                            <p class="text-[10px] text-ocean-500">Go home and ask Mom about her favorite fish to cook, why she likes it, and check its traffic light rating.</p>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-xs font-bold text-ocean-200 mb-1">Mom's most frequent fish / 媽媽最常煮的魚 <span class="text-rose-500">*</span></label>
+                                <input type="text" id="mom-fish" required placeholder="e.g. Milkfish / 虱目魚" class="w-full bg-ocean-950 border border-ocean-800 rounded-lg p-2.5 text-xs text-white focus:border-ocean-500 focus:ring-1 focus:ring-ocean-500 outline-none">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-ocean-200 mb-1">Confirm Traffic Light Color / 確認魚類的保護燈號 <span class="text-rose-500">*</span></label>
+                                <select id="mom-color" required class="w-full bg-ocean-950 border border-ocean-800 rounded-lg p-2.5 text-xs text-white focus:border-ocean-500 focus:ring-1 focus:ring-ocean-500 outline-none">
+                                    <option value="" disabled selected>Select traffic light color / 選擇燈號</option>
+                                    <option value="green">🟢 Recommend / 建議食用 (Green)</option>
+                                    <option value="yellow">🟡 Think Twice / 斟酌食用 (Yellow)</option>
+                                    <option value="red">🔴 Avoid / 避免食用 (Red)</option>
+                                    <option value="unknown">⚪ Unknown / 查無燈號</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="space-y-1">
+                            <label class="block text-xs font-bold text-ocean-200">Why does she buy/cook this fish? / 為什麼媽媽會選這種魚？ <span class="text-rose-500">*</span></label>
+                            <textarea id="mom-why" required rows="3" placeholder="e.g. She cooks it because it is healthy, has few bones, or is easy to fry. / 媽媽說因為它營養豐富、刺比較少，或者是煎起來很香..." class="w-full bg-ocean-950 border border-ocean-800 rounded-lg p-2.5 text-xs text-white focus:border-ocean-500 focus:ring-1 focus:ring-ocean-500 outline-none leading-relaxed"></textarea>
+                        </div>
+                    </div>
+
+                    <!-- STEP 5: Reflection & Submit -->
+                    <div id="form-step-5" class="hidden space-y-4">
+                        <div class="bg-ocean-950/40 p-4 rounded-xl border border-ocean-900 mb-2">
+                            <h4 class="text-sm font-bold text-ocean-300 flex items-center space-x-1.5 mb-1">
+                                <i class="fa-solid fa-pen-nib"></i>
+                                <span>Reflection / 實地探訪心得</span>
+                            </h4>
+                            <p class="text-[10px] text-ocean-500">Summarize what you learned through this field trip, and how you will change your seafood buying habits in the future.</p>
+                        </div>
+
+                        <div class="space-y-1.5">
+                            <label class="block text-xs font-bold text-ocean-200">Your Field Trip Reflection / 你的探訪與學習心得 <span class="text-rose-500">*</span></label>
+                            <textarea id="reflection" required rows="5" placeholder="I learned that we should choose Green light fishes like Mackerel more... / 我學到了我們應該多選綠燈魚，例如鯖魚，少買像是魚翅或黑鮪魚等紅燈魚..." class="w-full bg-ocean-950 border border-ocean-800 rounded-lg p-2.5 text-xs text-white focus:border-ocean-500 focus:ring-1 focus:ring-ocean-500 outline-none leading-relaxed"></textarea>
+                        </div>
+
+                        <!-- Final Warning Checklist -->
+                        <div class="bg-sky-950/30 border border-sky-800 p-4 rounded-xl space-y-2">
+                            <div class="flex items-start space-x-2">
+                                <input type="checkbox" id="consent-check" required class="mt-0.5 rounded text-sky-500">
+                                <label for="consent-check" class="text-[10px] sm:text-xs text-sky-200 leading-normal">
+                                    I confirm that this report is completed by myself and all details are honest reflections of my field trip. <br>
+                                    <span class="text-[9px] text-sky-400 font-normal">(我確認本報告是由我本人親自完成，內容及探訪細節真實無誤。)</span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- Dynamic Submission Progress Panel -->
+                        <div id="submitting-overlay" class="hidden bg-ocean-900/60 border border-ocean-800 rounded-xl p-4 flex items-center space-x-3 justify-center">
+                            <div class="animate-spin rounded-full h-5 w-5 border-t-2 border-b-2 border-ocean-400"></div>
+                            <span class="text-xs text-ocean-200 font-bold">Uploading data and compressed image to Sheet... Please stay on this page.</span>
+                        </div>
+                    </div>
+
+                    <!-- Navigation Action Buttons -->
+                    <div class="flex justify-between items-center border-t border-ocean-900 pt-4">
+                        <button type="button" id="form-prev-btn" onclick="wizardMove(-1)" class="invisible px-5 py-2.5 bg-ocean-900 border border-ocean-800 text-ocean-200 rounded-xl text-xs font-bold hover:bg-ocean-800 transition-all flex items-center space-x-1.5">
+                            <i class="fa-solid fa-chevron-left"></i>
+                            <span>Previous / 上一步</span>
+                        </button>
+                        
+                        <button type="button" id="form-next-btn" onclick="wizardMove(1)" class="px-5 py-2.5 bg-ocean-500 text-white rounded-xl text-xs font-bold hover:bg-ocean-400 transition-all flex items-center space-x-1.5">
+                            <span>Next / 下一步</span>
+                            <i class="fa-solid fa-chevron-right"></i>
+                        </button>
+
+                        <button type="submit" id="form-submit-btn" class="hidden px-6 py-2.5 bg-gradient-to-r from-emerald-500 to-teal-500 text-slate-950 rounded-xl text-xs font-black shadow-lg shadow-emerald-500/10 hover:brightness-110 active:scale-95 transition-all flex items-center space-x-1.5">
+                            <i class="fa-solid fa-paper-plane"></i>
+                            <span>Submit Report / 上傳資料</span>
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- Modal for showing Detailed Fish Guidelines -->
+    <div id="fish-modal" class="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4 opacity-0 pointer-events-none transition-all duration-300">
+        <div class="bg-gradient-to-b from-ocean-900 to-ocean-950 border border-ocean-800 w-full max-w-2xl rounded-3xl overflow-hidden shadow-2xl transform scale-95 transition-all duration-300 max-h-[90vh] flex flex-col">
+            <div class="relative h-48 sm:h-64 shrink-0 bg-ocean-950">
+                <img id="modal-image" src="" alt="Fish" class="w-full h-full object-cover">
+                <div class="absolute inset-0 bg-gradient-to-t from-ocean-950 via-transparent to-transparent"></div>
+                <button onclick="closeModal()" class="absolute top-4 right-4 bg-slate-950/60 hover:bg-slate-950/90 text-white rounded-full w-9 h-9 flex items-center justify-center transition-all">
+                    <i class="fa-solid fa-xmark text-base"></i>
+                </button>
+                <div class="absolute bottom-4 left-4 flex items-center space-x-2">
+                    <span id="modal-badge" class="px-2.5 py-0.5 rounded-lg text-[10px] font-black shadow-lg">GREEN</span>
+                    <span class="bg-slate-950/70 border border-ocean-800 px-2.5 py-0.5 rounded-lg text-[10px] font-bold text-ocean-300">
+                        Seafood Guide
+                    </span>
+                </div>
+            </div>
+
+            <div class="p-6 overflow-y-auto space-y-4 flex-grow">
+                <div>
+                    <h3 id="modal-name-en" class="text-xl sm:text-2xl font-black text-white">---</h3>
+                    <p id="modal-name-zh" class="text-xs sm:text-sm text-ocean-400 mt-0.5">---</p>
+                </div>
+
+                <div id="modal-reason-box" class="border rounded-2xl p-4 space-y-3">
+                    <div>
+                        <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-ocean-800 text-ocean-300 mb-1">
+                            English Assessment
+                        </span>
+                        <p id="modal-reason-en" class="text-xs text-slate-100 leading-relaxed font-light italic">---</p>
+                    </div>
+                    <div class="border-t border-ocean-800/60 pt-3">
+                        <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-ocean-800/50 text-ocean-400 mb-1">
+                            中文評量理由與建議
+                        </span>
+                        <p id="modal-reason-zh" class="text-xs text-ocean-300 leading-relaxed font-light">---</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-ocean-950/80 px-6 py-3.5 border-t border-ocean-900 flex justify-end shrink-0">
+                <button onclick="closeModal()" class="px-5 py-2 bg-ocean-800 hover:bg-ocean-700 text-ocean-200 text-xs font-bold rounded-lg transition-all">
+                    Close / 關閉
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Hidden Teacher API Config Panel (Double Click logo to trigger) -->
+    <div id="secret-config-panel" class="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4 hidden opacity-0 transition-all duration-300">
+        <div class="bg-gradient-to-b from-ocean-900 to-ocean-950 border border-ocean-700 w-full max-w-md rounded-2xl p-6 shadow-2xl relative">
+            <button onclick="toggleSecretConfig()" class="absolute top-4 right-4 text-ocean-400 hover:text-white transition-all">
+                <i class="fa-solid fa-circle-xmark text-lg"></i>
+            </button>
+            <div class="mb-4">
+                <h4 class="text-sm font-black text-white">Teacher's Secret Config Gate</h4>
+                <p class="text-[9px] text-ocean-400 uppercase tracking-wider">Configure Google Apps Script API endpoint</p>
+            </div>
+            <div class="space-y-3">
+                <div class="space-y-1">
+                    <label class="block text-[11px] font-bold text-ocean-300">Google Apps Script Web App URL / GAS後台網址</label>
+                    <input type="text" id="gas-endpoint-url" oninput="saveGasEndpointUrl()" placeholder="https://script.google.com/macros/s/.../exec" class="w-full bg-ocean-950 border border-ocean-800 rounded-lg p-2.5 text-[10px] text-white focus:border-ocean-400 outline-none">
+                    <p class="text-[9px] text-ocean-500">Paste your deployed GAS URL here. It is automatically stored in this browser's LocalStorage.</p>
+                </div>
+                <button onclick="toggleSecretConfig()" class="w-full py-2 bg-emerald-500 hover:bg-emerald-400 text-slate-950 text-xs font-black rounded-lg transition-all">
+                    Save and Close / 儲存並關閉
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Alert / Feedback Custom MessageBox Overlay -->
+    <div id="alert-box" class="fixed inset-0 z-50 bg-slate-950/85 backdrop-blur-sm flex items-center justify-center p-4 opacity-0 pointer-events-none transition-all">
+        <div class="bg-ocean-900 border border-ocean-800 w-full max-w-sm rounded-2xl p-6 text-center space-y-4 shadow-2xl">
+            <div id="alert-icon" class="text-4xl text-sky-400">
+                <i class="fa-solid fa-circle-info"></i>
+            </div>
+            <div>
+                <h4 id="alert-title" class="font-extrabold text-white text-base">Notice / 提示</h4>
+                <p id="alert-message" class="text-xs text-ocean-200 mt-2 leading-relaxed">Alert text goes here...</p>
+            </div>
+            <button onclick="closeAlertBox()" class="w-full py-2 bg-ocean-500 hover:bg-ocean-400 text-white rounded-xl text-xs font-bold transition-all">
+                Acknowledge / 確定
+            </button>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="border-t border-ocean-900 bg-slate-950 text-ocean-400 py-6 text-center text-[10px] mt-auto">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-2">
+            <p>Data Source: Google Sheets (Tab: <code class="text-ocean-200 font-semibold font-mono">Fish_Library</code>) | Designed for Bilingual Science & Classroom Inquiries.</p>
+            <p>&copy; 2026 Fish Traffic Light Project. All Rights Reserved. Double-click the header icon to configure API.</p>
+        </div>
+    </footer>
+
+    <script>
+        // Google Sheet CSV published URL setting - Tab: Fish_Library (gid=102982485)
+        const GOOGLE_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQTqRhF8QI7YbkDgcidMt9YaYL2nGMh-KDj6a_B-lkDbGezFcGQAa5q39_SxF0-bTTP14yHD43Zkxvm/pub?gid=102982485&single=true&output=csv";
+        
+        let allFishData = [];
+        let filteredFishData = [];
+        let currentLang = 'en'; // default to English
+        let currentFilter = 'all';
+        let currentWizardStep = 1;
+
+        // Offline data pool from your sheet screenshot (image_1d8e0d.png)
+        const fallbackFishData = [
+            {
+                englishName: "Mackerel",
+                chineseName: "台灣鯖魚",
+                lightColor: "green",
+                photoUrl: "https://i.postimg.cc/ZY2kwmWH/Scomber-scombrus-217326414.jpg",
+                reasonZh: "洄游性魚類，數量多且恢復快，近年漁獲量穩定",
+                reasonEn: "These are migratory fish species, abundant in number and recovering quickly, with stable catches in recent years."
+            },
+            {
+                englishName: "Pacific Saury",
+                chineseName: "秋刀魚",
+                lightColor: "green",
+                photoUrl: "https://i.postimg.cc/pTSScQL0/Sanma-by-beemartins-in-Matsushima-Miyagi.jpg",
+                reasonZh: "體型小、生長速度快，野生資源豐富",
+                reasonEn: "Small in size, fast-growing, and abundant in wild resources"
+            },
+            {
+                englishName: "Milkfish",
+                chineseName: "虱目魚",
+                lightColor: "green",
+                photoUrl: "https://i.postimg.cc/GmrjRNL/istockphoto-1881705666-612x612.jpg",
+                reasonZh: "屬於食物鏈底層，以植物性飼料人工養殖",
+                reasonEn: "They belong to the bottom of the food chain and are artificially raised on plant-based food."
+            },
+            {
+                englishName: "Mahi-mahi",
+                chineseName: "鬼頭刀",
+                lightColor: "green",
+                photoUrl: "https://i.postimg.cc/RVhFH4js/Mahi-Mahi-Dolphin-Fish.jpg",
+                reasonZh: "族群數量有回升趨勢，資源尚稱豐富",
+                reasonEn: "The population size is showing an upward trend, and resources are still relatively abundant."
+            },
+            {
+                englishName: "Hard Clam",
+                chineseName: "文蛤/蛤蜊",
+                lightColor: "green",
+                photoUrl: "https://i.postimg.cc/02h8KmGx/images.webp",
+                reasonZh: "屬於食物鏈底層，數量多且資源豐富",
+                reasonEn: "They belong to the bottom of the food chain, are numerous and have abundant resources."
+            },
+            {
+                englishName: "Oyster",
+                chineseName: "牡蠣/蚵仔",
+                lightColor: "green",
+                photoUrl: "https://i.postimg.cc/mQGcn2j/oysters-101-complete-guide-alt-1440x810.webp",
+                reasonZh: "屬於食物鏈底層，數量多且資源豐富",
+                reasonEn: "They belong to the bottom of the food chain, are numerous and have abundant resources."
+            },
+            {
+                englishName: "Sakura Shrimp",
+                chineseName: "櫻花蝦",
+                lightColor: "green",
+                photoUrl: "https://i.postimg.cc/fTqswZM8/images-(1).jpg",
+                reasonZh: "採中層網捕撈，對海底環境干擾較少",
+                reasonEn: "Mid-water net fishing causes less disturbance to the seabed environment."
+            },
+            {
+                englishName: "Hairtail / Ribbonfish",
+                chineseName: "白帶魚",
+                lightColor: "yellow",
+                photoUrl: "https://i.postimg.cc/pdc97ybL/images-(2).jpg",
+                reasonZh: "資源量可能受影響，進口者有較高碳足跡",
+                reasonEn: "Resource availability may be affected, and importers have a higher carbon footprint."
+            },
+            {
+                englishName: "Neritic Squid / Lockington",
+                chineseName: "透抽/小卷",
+                lightColor: "yellow",
+                photoUrl: "https://i.postimg.cc/W12h10sW/images-(3).jpg",
+                reasonZh: "資源持續減少，需審慎消費避免過度捕撈",
+                reasonEn: "Resources continue to dwindle, necessitating prudent consumption to avoid overfishing."
+            },
+            {
+                englishName: "Whitebait",
+                chineseName: "吻仔魚",
+                lightColor: "yellow",
+                photoUrl: "https://i.postimg.cc/LXZsbT3b/images-(4).jpg",
+                reasonZh: "拖網易混獲幼魚，且為海洋中高階魚類重要食物",
+                reasonEn: "Trawls often catch juvenile fish, which are an important food source for higher-level fish in the ocean."
+            },
+            {
+                englishName: "Blackmouth Croaker",
+                chineseName: "黑喉",
+                lightColor: "yellow",
+                photoUrl: "https://i.postimg.cc/pdmVmZ4P/maxresdefault.jpg",
+                reasonZh: "野生資源減少，需斟酌食用",
+                reasonEn: "Wild resources are dwindling, so consumption should be approached with caution."
+            },
+            {
+                englishName: "Atlantic Salmon",
+                chineseName: "大西洋鮭魚 (進口)",
+                lightColor: "yellow",
+                photoUrl: "https://i.postimg.cc/fRLDPCwP/images-(5).jpg",
+                reasonZh: "遠洋運輸碳排高，養殖飼料與環境有爭議",
+                reasonEn: "Ocean shipping has high carbon emissions, and the relationship between aquaculture feed and the environment is controversial."
+            },
+            {
+                englishName: "White Shrimp",
+                chineseName: "養殖白蝦",
+                lightColor: "yellow",
+                photoUrl: "https://i.postimg.cc/MKs81ByF/640x427-Shrimp-White-NOAAFisheries.png",
+                reasonZh: "需注意養殖方式與飼料來源",
+                reasonEn: "Attention should be paid to the breeding methods and feed sources."
+            },
+            {
+                englishName: "Tilapia",
+                chineseName: "台灣鯛/吳郭魚",
+                lightColor: "yellow",
+                photoUrl: "https://i.postimg.cc/T3ZFcJhp/images-(6).jpg",
+                reasonZh: "需注意養殖環境與方式",
+                reasonEn: "Attention should be paid to the breeding environment and methods."
+            },
+            {
+                englishName: "Shark / Shark Fin",
+                chineseName: "鯊魚/魚翅",
+                lightColor: "red",
+                photoUrl: "https://i.postimg.cc/ncrWbPDD/shark-fin-with-ivory-for-fin-press-release.jpg",
+                reasonZh: "食物鏈頂端，生長慢、恢復不易且重金屬高",
+                reasonEn: "At the top of the food chain, they grow slowly, are difficult to recover from, and have high levels of heavy metals."
+            },
+            {
+                englishName: "Bluefin Tuna",
+                chineseName: "黑鮪魚/鮪魚",
+                lightColor: "red",
+                photoUrl: "https://i.postimg.cc/V6z77GWN/images-(7).jpg",
+                reasonZh: "食物鏈頂端，生長慢且已過度捕撈",
+                reasonEn: "At the top of the food chain, slow-growing and already overfished"
+            },
+            {
+                englishName: "Yellow Croaker",
+                chineseName: "野生黃魚",
+                lightColor: "red",
+                photoUrl: "https://i.postimg.cc/8Pvywnfx/images-(8).jpg",
+                reasonZh: "野生資源銳減，族群數量難以恢復",
+                reasonEn: "Wild resources have dwindled sharply, making it difficult for the population to recover."
+            },
+            {
+                englishName: "Wild Grouper",
+                chineseName: "野生石斑魚",
+                lightColor: "red",
+                photoUrl: "https://i.postimg.cc/Kckpsvfz/sabah-grouper-photo-by-irwin-wong.jpg",
+                reasonZh: "珊瑚礁棲性，數量少且資源恢復不易",
+                reasonEn: "Coral reefs are resident species, few in number, and difficult to restore."
+            },
+            {
+                englishName: "Eel",
+                chineseName: "鰻魚",
+                lightColor: "red",
+                photoUrl: "https://i.postimg.cc/HWy3C8WL/European-eel.jpg",
+                reasonZh: "野生資源銳減，族群數量不易恢復",
+                reasonEn: "Wild resources have dwindled sharply, making it difficult for the population to recover."
+            },
+            {
+                englishName: "Swordfish",
+                chineseName: "旗魚",
+                lightColor: "red",
+                photoUrl: "https://i.postimg.cc/nLrYScWJ/640x427-striped-marlin-final.png",
+                reasonZh: "食物鏈高階消費者，生長慢且資源恢復不易",
+                reasonEn: "High-level consumers in the food chain grow slowly and have difficulty replenishing resources."
+            }
+        ];
+
+        // Custom parser to replace PapaParse cleanly
+        function parseVanillaCSV(text) {
+            const lines = [];
+            let row = [""];
+            let inQuotes = false;
+            
+            for (let i = 0; i < text.length; i++) {
+                let c = text[i];
+                let next = text[i+1];
+                
+                if (c === '"') {
+                    if (inQuotes && next === '"') {
+                        row[row.length - 1] += '"';
+                        i++; 
+                    } else {
+                        inQuotes = !inQuotes;
+                    }
+                } else if (c === ',' && !inQuotes) {
+                    row.push("");
+                } else if ((c === '\r' || c === '\n') && !inQuotes) {
+                    if (c === '\r' && next === '\n') { i++; }
+                    lines.push(row);
+                    row = [""];
+                } else {
+                    row[row.length - 1] += c;
+                }
+            }
+            if (row.length > 1 || row[0] !== "") {
+                lines.push(row);
+            }
+            return lines;
+        }
+
+        // 預設的 GAS 網頁應用程式網址，方便學生開箱即用不需再設定
+        const DEFAULT_GAS_URL = "https://script.google.com/macros/s/AKfycbzgcaKgnXqpXGUiw2_MeyOZhV0jl9qiyD1YQVlaNMrgA4nYPLSj-8KjLMWhA83VqW3v/exec";
+
+        window.onload = function() {
+            try {
+                // 優先讀取 LocalStorage 快取，若無則自動套用您提供的新預設 GAS 網址
+                const savedUrl = localStorage.getItem('gas_endpoint_url') || DEFAULT_GAS_URL;
+                document.getElementById('gas-endpoint-url').value = savedUrl;
+
+                updateUIByLanguage();
+                fetchCloudCSV();
+            } catch (err) {
+                console.error("Initialization error:", err);
+                triggerOfflineFallback();
+            }
+        }
+
+        async function fetchCloudCSV() {
+            setSyncStatus('loading');
+            
+            const timeoutPromise = new Promise((resolve, reject) => {
+                setTimeout(() => reject(new Error('Fetch Timeout (1.5s)')), 1500);
+            });
+            
+            const fetchPromise = fetch(GOOGLE_CSV_URL).then(response => {
+                if (!response.ok) {
+                    throw new Error("HTTP status error: " + response.status);
+                }
+                return response.text();
+            });
+
+            try {
+                const csvText = await Promise.race([fetchPromise, timeoutPromise]);
+                const parsedRows = parseVanillaCSV(csvText);
+                
+                if (parsedRows && parsedRows.length > 1) {
+                    const dataRows = parsedRows.slice(1);
+                    allFishData = dataRows.map(row => {
+                        return {
+                            englishName: (row[0] || '').trim(),
+                            chineseName: (row[1] || '').trim(),
+                            lightColor: normalizeColor((row[2] || '').trim()),
+                            photoUrl: (row[3] || '').trim(),
+                            reasonZh: (row[4] || '').trim(),
+                            reasonEn: (row[5] || '').trim()
+                        };
+                    }).filter(fish => fish.chineseName || fish.englishName);
+
+                    if (allFishData.length > 0) {
+                        setSyncStatus('success');
+                        initApplication();
+                        return;
+                    }
+                }
+                throw new Error("Null data rows.");
+            } catch (err) {
+                console.warn("Using offline safe-fallback dataset.", err);
+                triggerOfflineFallback();
+            }
+        }
+
+        function normalizeColor(colorStr) {
+            const raw = colorStr.toLowerCase();
+            if (raw.includes('green') || raw.includes('綠') || raw.includes('g')) return 'green';
+            if (raw.includes('yellow') || raw.includes('黃') || raw.includes('y')) return 'yellow';
+            if (raw.includes('red') || raw.includes('紅') || raw.includes('r')) return 'red';
+            return 'yellow';
+        }
+
+        function triggerOfflineFallback() {
+            setSyncStatus('offline');
+            allFishData = [...fallbackFishData];
+            initApplication();
+        }
+
+        function initApplication() {
+            const loader = document.getElementById('loader-view');
+            if (loader) loader.classList.add('hidden');
+            
+            filteredFishData = [...allFishData];
+            calculateStats();
+            filterFish();
+            generateStudentChecklist();
+        }
+
+        function calculateStats() {
+            const greenCount = allFishData.filter(f => f.lightColor === 'green').length;
+            const yellowCount = allFishData.filter(f => f.lightColor === 'yellow').length;
+            const redCount = allFishData.filter(f => f.lightColor === 'red').length;
+
+            document.getElementById('count-green').innerText = greenCount;
+            document.getElementById('count-yellow').innerText = yellowCount;
+            document.getElementById('count-red').innerText = redCount;
+            document.getElementById('total-badge').innerText = allFishData.length;
+        }
+
+        function generateStudentChecklist() {
+            const container = document.getElementById('step-checklist-container');
+            if (!container) return;
+            container.innerHTML = '';
+
+            allFishData.forEach((fish) => {
+                const item = document.createElement('label');
+                item.className = "flex items-start space-x-2 p-2 bg-ocean-900/40 rounded-lg border border-ocean-800/80 hover:border-ocean-500 cursor-pointer transition-all";
+                
+                let colorDot = 'bg-emerald-500';
+                if (fish.lightColor === 'yellow') colorDot = 'bg-amber-500';
+                if (fish.lightColor === 'red') colorDot = 'bg-rose-500';
+
+                item.innerHTML = `
+                    <input type="checkbox" name="visited-fish" value="${fish.englishName}" class="mt-0.5 rounded text-sky-500 bg-ocean-950 border-ocean-800">
+                    <div class="leading-none text-left">
+                        <span class="inline-block w-2 h-2 rounded-full ${colorDot} mr-1"></span>
+                        <span class="text-[11px] font-bold text-white block">${fish.englishName}</span>
+                        <span class="text-[9px] text-ocean-400 font-normal">${fish.chineseName}</span>
+                    </div>
+                `;
+                container.appendChild(item);
+            });
+        }
+
+        function setFilter(color) {
+            currentFilter = color;
+            const filters = ['all', 'green', 'yellow', 'red'];
+            filters.forEach(f => {
+                const btn = document.getElementById(`filter-${f}`);
+                if (!btn) return;
+                
+                if (f === color) {
+                    btn.className = getFilterActiveClass(f);
+                } else {
+                    btn.className = getFilterInactiveClass(f);
+                }
+            });
+            filterFish();
+        }
+
+        function getFilterActiveClass(color) {
+            const base = "px-4 py-2 rounded-xl text-xs font-bold transition-all border shadow-lg ";
+            if (color === 'all') return base + "bg-ocean-500 text-white border-ocean-500 shadow-ocean-500/20";
+            if (color === 'green') return base + "bg-emerald-500 text-slate-950 border-emerald-500 shadow-emerald-500/10";
+            if (color === 'yellow') return base + "bg-amber-500 text-slate-950 border-amber-500 shadow-amber-500/10";
+            if (color === 'red') return base + "bg-rose-500 text-slate-950 border-rose-500 shadow-rose-500/10";
+        }
+
+        function getFilterInactiveClass(color) {
+            const base = "px-4 py-2 rounded-xl text-xs font-semibold transition-all border bg-ocean-900/50 ";
+            if (color === 'all') return base + "text-ocean-300 border-ocean-800 hover:border-ocean-600";
+            if (color === 'green') return base + "text-emerald-400 border-emerald-500/30 hover:border-emerald-500/60";
+            if (color === 'yellow') return base + "text-amber-400 border-amber-500/30 hover:border-amber-500/60";
+            if (color === 'red') return base + "text-rose-400 border-rose-500/30 hover:border-rose-500/60";
+        }
+
+        function filterFish() {
+            const query = document.getElementById('search-input').value.toLowerCase().trim();
+            
+            filteredFishData = allFishData.filter(fish => {
+                if (currentFilter !== 'all' && fish.lightColor !== currentFilter) {
+                    return false;
+                }
+                if (query) {
+                    const matchZh = fish.chineseName.toLowerCase().includes(query);
+                    const matchEn = fish.englishName.toLowerCase().includes(query);
+                    return matchZh || matchEn;
+                }
+                return true;
+            });
+
+            renderFishCards();
+        }
+
+        function renderFishCards() {
+            const grid = document.getElementById('fish-grid');
+            if (!grid) return;
+            grid.innerHTML = '';
+
+            if (filteredFishData.length === 0) {
+                grid.innerHTML = `
+                    <div class="col-span-full py-16 text-center">
+                        <i class="fa-solid fa-shrimp text-ocean-700 text-5xl mb-3"></i>
+                        <h4 class="text-sm font-bold text-ocean-300">No matching seafood found</h4>
+                        <p class="text-[10px] text-ocean-500 mt-1">Please try searching other keywords or filters / 請嘗試其他搜尋詞。</p>
+                    </div>
+                `;
+                return;
+            }
+
+            filteredFishData.forEach((fish, idx) => {
+                const card = document.createElement('div');
+                card.className = "bg-gradient-to-br from-ocean-900/30 to-ocean-950/60 border border-ocean-800 rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 hover:scale-[1.01] flex flex-col group cursor-pointer";
+                card.setAttribute('onclick', `openModalByIndex(${idx})`);
+
+                let colorStyle = { bg: '', dot: '', text: '', border: '' };
+                if (fish.lightColor === 'green') {
+                    colorStyle = { bg: 'bg-emerald-500 text-slate-950', dot: 'bg-emerald-400', text: 'text-emerald-400', border: 'group-hover:border-emerald-500/40' };
+                } else if (fish.lightColor === 'yellow') {
+                    colorStyle = { bg: 'bg-amber-500 text-slate-950', dot: 'bg-amber-400', text: 'text-amber-400', border: 'group-hover:border-amber-500/40' };
+                } else {
+                    colorStyle = { bg: 'bg-rose-500 text-slate-950', dot: 'bg-rose-400', text: 'text-rose-400', border: 'group-hover:border-rose-500/40' };
+                }
+
+                card.className += " " + colorStyle.border;
+                const finalImg = fish.photoUrl ? fish.photoUrl : `https://placehold.co/400x300/0c4a6e/38bdf8?text=${encodeURIComponent(fish.englishName)}`;
+
+                card.innerHTML = `
+                    <div class="relative h-40 overflow-hidden bg-ocean-950 shrink-0">
+                        <img src="${finalImg}" alt="${fish.englishName}" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" onerror="this.onerror=null; this.src='https://placehold.co/400x300/0c4a6e/38bdf8?text=${encodeURIComponent(fish.englishName)}'">
+                        <div class="absolute top-3 left-3 flex items-center space-x-1.5 px-2 py-0.5 rounded-lg text-[9px] font-black tracking-wider uppercase ${colorStyle.bg}">
+                            <span class="w-1 h-1 rounded-full ${colorStyle.dot} animate-ping"></span>
+                            <span>${currentLang === 'zh' ? (fish.lightColor === 'green' ? '建議' : fish.lightColor === 'yellow' ? '斟酌' : '避免') : fish.lightColor.toUpperCase()}</span>
+                        </div>
+                    </div>
+                    <div class="p-4 flex flex-col flex-grow justify-between text-left">
+                        <div>
+                            <h4 class="text-base font-black text-white group-hover:text-ocean-300 transition-all">${fish.englishName || 'Unknown'}</h4>
+                            <p class="text-xs text-ocean-400 -mt-0.5">${fish.chineseName || '未知'}</p>
+                            <p class="text-[11px] text-ocean-200 mt-2 line-clamp-2 leading-relaxed">
+                                ${currentLang === 'zh' ? (fish.reasonZh || '無說明') : (fish.reasonEn || 'No notes.')}
+                            </p>
+                        </div>
+                        <div class="mt-4 pt-3 border-t border-ocean-900/60 flex items-center justify-between text-[10px] font-bold ${colorStyle.text}">
+                            <span>View Eco Evaluation / 評級理由</span>
+                            <i class="fa-solid fa-arrow-right group-hover:translate-x-1 transition-all"></i>
+                        </div>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        function openModalByIndex(index) {
+            const fish = filteredFishData[index];
+            if (fish) {
+                const modal = document.getElementById('fish-modal');
+                const finalImg = fish.photoUrl ? fish.photoUrl : `https://placehold.co/600x400/0c4a6e/38bdf8?text=${encodeURIComponent(fish.englishName)}`;
+                
+                const img = document.getElementById('modal-image');
+                img.src = finalImg;
+                img.onerror = function() {
+                    this.src = `https://placehold.co/600x400/0c4a6e/38bdf8?text=${encodeURIComponent(fish.englishName)}`;
+                };
+
+                document.getElementById('modal-name-en').innerText = fish.englishName || 'Unknown Species';
+                document.getElementById('modal-name-zh').innerText = fish.chineseName || '未知品名';
+                document.getElementById('modal-reason-en').innerText = fish.reasonEn || 'No details.';
+                document.getElementById('modal-reason-zh').innerText = fish.reasonZh || '無詳細中文評估原因。';
+
+                const badge = document.getElementById('modal-badge');
+                const rBox = document.getElementById('modal-reason-box');
+
+                if (fish.lightColor === 'green') {
+                    badge.className = "px-2.5 py-0.5 rounded-lg text-[10px] font-black shadow-lg bg-emerald-500 text-slate-950";
+                    badge.innerText = "RECOMMENDED / GREEN 建議食用";
+                    rBox.className = "border rounded-2xl p-4 space-y-3 border-emerald-500/20 bg-emerald-950/10";
+                } else if (fish.lightColor === 'yellow') {
+                    badge.className = "px-2.5 py-0.5 rounded-lg text-[10px] font-black shadow-lg bg-amber-500 text-slate-950";
+                    badge.innerText = "THINK TWICE / YELLOW 斟酌食用";
+                    rBox.className = "border rounded-2xl p-4 space-y-3 border-amber-500/20 bg-amber-950/10";
+                } else {
+                    badge.className = "px-2.5 py-0.5 rounded-lg text-[10px] font-black shadow-lg bg-rose-500 text-slate-950";
+                    badge.innerText = "AVOID / RED 避免食用";
+                    rBox.className = "border rounded-2xl p-4 space-y-3 border-rose-500/20 bg-rose-950/10";
+                }
+
+                modal.classList.remove('pointer-events-none', 'opacity-0');
+                modal.firstElementChild.classList.remove('scale-95');
+            }
+        }
+
+        function closeModal() {
+            const modal = document.getElementById('fish-modal');
+            if (modal) {
+                modal.classList.add('pointer-events-none', 'opacity-0');
+                modal.firstElementChild.classList.add('scale-95');
+            }
+        }
+
+        function toggleLanguage() {
+            currentLang = currentLang === 'en' ? 'zh' : 'en';
+            document.getElementById('lang-btn-text').innerText = currentLang === 'en' ? '繁體中文' : 'English';
+            updateUIByLanguage();
+            if (allFishData.length > 0) {
+                filterFish();
+            }
+        }
+
+        function updateUIByLanguage() {
+            const syncSpan = document.getElementById('sync-status');
+            const state = syncSpan.getAttribute('data-state') || 'loading';
+            
+            if (currentLang === 'zh') {
+                if (state === 'loading') syncSpan.innerText = '正在讀取雲端資料庫...';
+                else if (state === 'offline') syncSpan.innerText = '使用離線備份資料庫';
+                else syncSpan.innerText = '雲端資料載入正常';
+            } else {
+                if (state === 'loading') syncSpan.innerText = 'Syncing cloud database...';
+                else if (state === 'offline') syncSpan.innerText = 'Offline backup data activated';
+                else syncSpan.innerText = 'Cloud connection established';
+            }
+        }
+
+        function setSyncStatus(state) {
+            const syncSpan = document.getElementById('sync-status');
+            const syncDot = document.getElementById('sync-dot');
+            if (!syncSpan) return;
+            
+            syncSpan.setAttribute('data-state', state);
+            updateUIByLanguage();
+
+            if (state === 'loading') {
+                if (syncDot) syncDot.className = "w-2 h-2 rounded-full bg-amber-500 animate-pulse";
+            } else if (state === 'offline') {
+                syncSpan.parentElement.className = "hidden sm:flex items-center bg-sky-950/50 border border-sky-800 rounded-full px-3 py-1 text-xs text-sky-400 space-x-2";
+                if (syncDot) syncDot.className = "w-2 h-2 rounded-full bg-sky-400";
+            } else {
+                syncSpan.parentElement.className = "hidden sm:flex items-center bg-emerald-950/20 border border-emerald-900 rounded-full px-3 py-1 text-xs text-emerald-400 space-x-2";
+                if (syncDot) syncDot.className = "w-2 h-2 rounded-full bg-emerald-500";
+            }
+        }
+
+        function switchTab(tabId) {
+            const sections = ['directory', 'quiz', 'assignment'];
+            sections.forEach(sec => {
+                const element = document.getElementById(`section-${sec}`);
+                const btn = document.getElementById(`tab-${sec}`);
+                
+                if (element) {
+                    if (sec === tabId) {
+                        element.classList.remove('hidden');
+                    } else {
+                        element.classList.add('hidden');
+                    }
+                }
+                
+                if (btn) {
+                    if (sec === tabId) {
+                        btn.className = "px-6 py-3 font-bold border-b-2 border-ocean-500 text-ocean-400 text-xs sm:text-sm flex items-center space-x-2 shrink-0 transition-all";
+                    } else {
+                        btn.className = "px-6 py-3 font-bold border-b-2 border-transparent text-ocean-500 text-xs sm:text-sm flex items-center space-x-2 shrink-0 hover:text-ocean-300 transition-all";
+                    }
+                }
+            });
+
+            if (tabId === 'quiz') resetQuiz();
+        }
+
+        let quizQuestions = [];
+        let quizCurrentIndex = 0;
+        let quizScore = 0;
+
+        function resetQuiz() {
+            document.getElementById('quiz-intro').classList.remove('hidden');
+            document.getElementById('quiz-gameplay').classList.add('hidden');
+            document.getElementById('quiz-results').classList.add('hidden');
+        }
+
+        function startQuiz() {
+            if (allFishData.length === 0) return;
+            const shuffled = [...allFishData].sort(() => 0.5 - Math.random());
+            quizQuestions = shuffled.slice(0, 5);
+            quizCurrentIndex = 0;
+            quizScore = 0;
+
+            document.getElementById('quiz-intro').classList.add('hidden');
+            document.getElementById('quiz-results').classList.add('hidden');
+            document.getElementById('quiz-gameplay').classList.remove('hidden');
+            loadQuizQuestion();
+        }
+
+        function loadQuizQuestion() {
+            const feedback = document.getElementById('quiz-feedback');
+            if (feedback) feedback.classList.add('hidden');
+
+            const btns = ['green', 'yellow', 'red'].map(c => document.getElementById(`quiz-btn-${c}`));
+            btns.forEach(b => {
+                if (b) {
+                    b.removeAttribute('disabled');
+                    b.classList.remove('opacity-40');
+                }
+            });
+
+            const current = quizQuestions[quizCurrentIndex];
+            if (!current) return;
+
+            document.getElementById('quiz-current-idx').innerText = quizCurrentIndex + 1;
+            document.getElementById('quiz-score').innerText = quizScore;
+            document.getElementById('quiz-fish-name-en').innerText = current.englishName || 'Unknown Species';
+            document.getElementById('quiz-fish-name-zh').innerText = current.chineseName || '未知品種';
+
+            const finalImg = current.photoUrl ? current.photoUrl : `https://placehold.co/400x300/0c4a6e/38bdf8?text=${encodeURIComponent(current.englishName)}`;
+            const qImg = document.getElementById('quiz-fish-image');
+            qImg.src = finalImg;
+            qImg.onerror = function() {
+                this.src = `https://placehold.co/400x300/0c4a6e/38bdf8?text=${encodeURIComponent(current.englishName)}`;
+            };
+        }
+
+        function submitQuizAnswer(choice) {
+            const current = quizQuestions[quizCurrentIndex];
+            if (!current) return;
+
+            const feedback = document.getElementById('quiz-feedback');
+            const title = document.getElementById('feedback-title');
+            const desc = document.getElementById('feedback-desc');
+            const icon = document.getElementById('feedback-icon');
+
+            const btns = ['green', 'yellow', 'red'].map(c => document.getElementById(`quiz-btn-${c}`));
+            btns.forEach(b => {
+                if (b) {
+                    b.setAttribute('disabled', 'true');
+                    if (!b.id.includes(choice)) {
+                        b.classList.add('opacity-40');
+                    }
+                }
+            });
+
+            const correct = choice === current.lightColor;
+            if (correct) {
+                quizScore += 20;
+                title.className = "font-extrabold text-emerald-400 text-sm";
+                title.innerText = "Correct! / 答對了！";
+                icon.innerHTML = '<i class="fa-solid fa-circle-check text-emerald-400"></i>';
+                feedback.className = "mt-4 rounded-xl p-4 border border-emerald-500/20 bg-emerald-950/10 transition-all";
+            } else {
+                title.className = "font-extrabold text-rose-400 text-sm";
+                title.innerText = "Oops! Incorrect / 選錯囉！";
+                icon.innerHTML = '<i class="fa-solid fa-circle-xmark text-rose-400"></i>';
+                feedback.className = "mt-4 rounded-xl p-4 border border-rose-500/20 bg-rose-950/10 transition-all";
+            }
+
+            const lightLabel = current.lightColor === 'green' ? '🟢 Green / 綠燈 (Recommend)' : current.lightColor === 'yellow' ? '🟡 Yellow / 黃燈 (Think Twice)' : '🔴 Red / 紅燈 (Avoid)';
+            desc.innerHTML = `
+                <div class="mb-1 text-xs">
+                    <span class="font-bold text-slate-300">Correct Classification / 正確保護燈號：</span>
+                    <span class="font-extrabold text-white">${lightLabel}</span>
+                </div>
+                <p class="text-[11px] text-ocean-300 leading-relaxed font-light italic mt-1 border-t border-ocean-900/60 pt-1.5">
+                    <strong>Reason (EN):</strong> ${current.reasonEn || 'N/A'}<br>
+                    <strong>原因 (中):</strong> ${current.reasonZh || '暫無'}
+                </p>
+            `;
+
+            feedback.classList.remove('hidden');
+            document.getElementById('quiz-score').innerText = quizScore;
+        }
+
+        function nextQuizQuestion() {
+            quizCurrentIndex++;
+            if (quizCurrentIndex < quizQuestions.length) {
+                loadQuizQuestion();
+            } else {
+                showQuizResults();
+            }
+        }
+
+        function showQuizResults() {
+            document.getElementById('quiz-gameplay').classList.add('hidden');
+            document.getElementById('quiz-results').classList.remove('hidden');
+            document.getElementById('quiz-final-score').innerText = quizScore;
+
+            const trophy = document.getElementById('quiz-trophy');
+            const summary = document.getElementById('quiz-summary-desc');
+
+            if (quizScore >= 80) {
+                trophy.className = "text-5xl text-amber-400 mb-3 animate-bounce";
+                summary.innerHTML = `
+                    <p class="font-bold text-white text-sm mb-1">Excellent! Super Ocean Guardian!</p>
+                    <p class="text-ocean-300">You show a remarkable awareness of ocean sustainability! Please share this wisdom and lead the change in your home cooking choices!</p>
+                    <p class="text-[10px] text-ocean-500 mt-2">你對海洋環境具有極高認知！請與家人朋友分享紅綠燈，一起守護海洋。</p>
+                `;
+            } else if (quizScore >= 40) {
+                trophy.className = "text-5xl text-sky-400 mb-3";
+                summary.innerHTML = `
+                    <p class="font-bold text-white text-sm mb-1">Good Job! Keep Learning!</p>
+                    <p class="text-ocean-300">You understand basic sustainable seafood choices. Keep using this database and think twice before buying next time!</p>
+                    <p class="text-[10px] text-ocean-500 mt-2">做得不錯！多加利用魚類紅綠燈目錄，探訪市場時能做出更環保的決定。</p>
+                `;
+            } else {
+                trophy.className = "text-5xl text-ocean-500 mb-3";
+                summary.innerHTML = `
+                    <p class="font-bold text-white text-sm mb-1">A Great Learning Opportunity!</p>
+                    <p class="text-ocean-300">Don't worry! Reviewing the Seafood Directory is a perfect way to build your skills. Let's do better next time!</p>
+                    <p class="text-[10px] text-ocean-500 mt-2">別灰心！這是一個絕佳的學習旅程。點擊「目錄」多閱讀各魚種燈號原因，為地球出一份力！</p>
+                `;
+            }
+        }
+
+        function wizardMove(direction) {
+            const nextStep = currentWizardStep + direction;
+            if (nextStep < 1 || nextStep > 5) return;
+
+            if (direction > 0 && !validateStep(currentWizardStep)) {
+                return; 
+            }
+
+            document.getElementById(`form-step-${currentWizardStep}`).classList.add('hidden');
+            document.getElementById(`form-step-${nextStep}`).classList.remove('hidden');
+
+            const prevDot = document.getElementById(`step-dot-${currentWizardStep}`);
+            const nextDot = document.getElementById(`step-dot-${nextStep}`);
+            
+            prevDot.className = "py-1 border-b-4 border-ocean-900 text-[10px] font-bold text-ocean-500 transition-all";
+            nextDot.className = "py-1 border-b-4 border-ocean-500 text-[10px] font-black text-white transition-all";
+
+            currentWizardStep = nextStep;
+
+            const prevBtn = document.getElementById('form-prev-btn');
+            if (currentWizardStep === 1) {
+                prevBtn.classList.add('invisible');
+            } else {
+                prevBtn.classList.remove('invisible');
+            }
+
+            const nextBtn = document.getElementById('form-next-btn');
+            const submitBtn = document.getElementById('form-submit-btn');
+            
+            if (currentWizardStep === 5) {
+                nextBtn.classList.add('hidden');
+                submitBtn.classList.remove('hidden');
+            } else {
+                nextBtn.classList.remove('hidden');
+                submitBtn.classList.add('hidden');
+            }
+        }
+
+        function validateStep(step) {
+            if (step === 1) {
+                const cls = document.getElementById('student-class').value.trim();
+                const name = document.getElementById('student-name').value.trim();
+                const seat = document.getElementById('student-seat').value.trim();
+                if (!cls || !name || !seat) {
+                    showCustomAlert("Form Incomplete / 資料未填寫", "Please enter your class, name, and seat number before proceeding. <br><span class='text-[10px] text-rose-400'>(請填寫班級、姓名與座號以繼續填寫。)</span>");
+                    return false;
+                }
+            } else if (step === 2) {
+                const desc = document.getElementById('market-description').value.trim();
+                const photoInput = document.getElementById('photo-upload');
+                
+                if (!base64PhotoData) {
+                    showCustomAlert("Photo Required / 必須上傳照片", "Please upload a photo of your field trip market visit. <br><span class='text-[10px] text-rose-400'>(請上傳一張去菜市場探訪魚販實地拍照，以供作業審核。)</span>");
+                    return false;
+                }
+                if (!desc) {
+                    showCustomAlert("Findings Empty / 探訪發現空白", "Please describe what you observed at the market. <br><span class='text-[10px] text-rose-400'>(請撰寫您的探訪發現筆記。)</span>");
+                    return false;
+                }
+            } else if (step === 4) {
+                const momFish = document.getElementById('mom-fish').value.trim();
+                const momColor = document.getElementById('mom-color').value;
+                const momWhy = document.getElementById('mom-why').value.trim();
+
+                if (!momFish || !momColor || !momWhy) {
+                    showCustomAlert("Interview Empty / 訪談尚未填寫", "Please ask Mom about her frequently cooked fish and why, and confirm its rating. <br><span class='text-[10px] text-rose-400'>(請向媽媽訪談她最常烹煮的魚、原由，以及其保護燈號。)</span>");
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        let base64PhotoData = "";
+        let uploadedPhotoName = "";
+
+        function previewAndCompressImage(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            uploadedPhotoName = file.name;
+            const reader = new FileReader();
+            
+            reader.onload = function(e) {
+                const img = new Image();
+                img.src = e.target.result;
+                
+                img.onload = function() {
+                    // Maximum dimensions for compressed image (e.g. 800px)
+                    const MAX_WIDTH = 800;
+                    const MAX_HEIGHT = 800;
+                    
+                    let width = img.width;
+                    let height = img.height;
+                    
+                    if (width > height) {
+                        if (width > MAX_WIDTH) {
+                            height = Math.round((height * MAX_WIDTH) / width);
+                            width = MAX_WIDTH;
+                        }
+                    } else {
+                        if (height > MAX_HEIGHT) {
+                            width = Math.round((width * MAX_HEIGHT) / height);
+                            height = MAX_HEIGHT;
+                        }
+                    }
+                    
+                    // Set up canvas for resizing
+                    const canvas = document.createElement('canvas');
+                    canvas.width = width;
+                    canvas.height = height;
+                    
+                    const ctx = canvas.getContext('2d');
+                    ctx.drawImage(img, 0, 0, width, height);
+                    
+                    // Compress to JPEG format with 60% quality
+                    base64PhotoData = canvas.toDataURL('image/jpeg', 0.6);
+                    
+                    // Show preview block
+                    document.getElementById('upload-placeholder').classList.add('hidden');
+                    const previewContainer = document.getElementById('photo-preview-container');
+                    const previewImg = document.getElementById('photo-preview');
+                    
+                    previewImg.src = base64PhotoData;
+                    previewContainer.classList.remove('hidden');
+                    
+                    // Calculate and display sizes to show successful compression in console
+                    const originalKB = Math.round(file.size / 1024);
+                    const compressedKB = Math.round((base64PhotoData.length * 3 / 4) / 1024);
+                    console.log(`Image compressed: ${originalKB}KB -> ${compressedKB}KB (Reduced by ${Math.round(100 - (compressedKB/originalKB*100))}%!)`);
+                }
+            };
+            reader.readAsDataURL(file);
+        }
+
+        // Hidden secret console methods
+        function toggleSecretConfig() {
+            const panel = document.getElementById('secret-config-panel');
+            if (panel.classList.contains('hidden')) {
+                panel.classList.remove('hidden');
+                setTimeout(() => panel.classList.remove('opacity-0'), 50);
+            } else {
+                panel.classList.add('opacity-0');
+                setTimeout(() => panel.classList.add('hidden'), 300);
+            }
+        }
+
+        function saveGasEndpointUrl() {
+            const val = document.getElementById('gas-endpoint-url').value.trim();
+            localStorage.setItem('gas_endpoint_url', val);
+        }
+
+        function showCustomAlert(title, message, iconType = "info") {
+            const box = document.getElementById('alert-box');
+            document.getElementById('alert-title').innerHTML = title;
+            document.getElementById('alert-message').innerHTML = message;
+
+            const iconEl = document.getElementById('alert-icon');
+            if (iconType === "success") {
+                iconEl.className = "text-4xl text-emerald-400";
+                iconEl.innerHTML = '<i class="fa-solid fa-circle-check"></i>';
+            } else if (iconType === "error") {
+                iconEl.className = "text-4xl text-rose-500";
+                iconEl.innerHTML = '<i class="fa-solid fa-triangle-exclamation"></i>';
+            } else {
+                iconEl.className = "text-4xl text-sky-400";
+                iconEl.innerHTML = '<i class="fa-solid fa-circle-info"></i>';
+            }
+
+            box.classList.remove('pointer-events-none', 'opacity-0');
+        }
+
+        function closeAlertBox() {
+            document.getElementById('alert-box').classList.add('pointer-events-none', 'opacity-0');
+        }
+
+        async function handleFormSubmit(event) {
+            event.preventDefault();
+
+            const reflection = document.getElementById('reflection').value.trim();
+            const consent = document.getElementById('consent-check').checked;
+
+            if (!reflection || !consent) {
+                showCustomAlert("Consent Missing / 欄位未勾選", "Please write down your reflection and check the completion confirmation. <br><span class='text-[10px] text-rose-400'>(請確認探訪心得已填寫，且勾選誠實報告同意核對框。)</span>");
+                return;
+            }
+
+            const gasUrl = document.getElementById('gas-endpoint-url').value.trim();
+            if (!gasUrl) {
+                showCustomAlert("GAS URL Configuration Required", "Please configure the Google Apps Script Web App URL first. (Tip: Double click the top logo to trigger the config panel) <br><span class='text-[10px] text-rose-400'>(尚未配置後端網址。請「按兩下」左上角標題/Logo，輸入並儲存您的 Apps Script 網頁應用程式網址。)</span>", "error");
+                return;
+            }
+
+            const checkedFishes = [];
+            const checkboxes = document.getElementsByName('visited-fish');
+            checkboxes.forEach(cb => {
+                if (cb.checked) {
+                    checkedFishes.push(cb.value);
+                }
+            });
+
+            const submissionPayload = {
+                studentClass: document.getElementById('student-class').value.trim(),
+                studentName: document.getElementById('student-name').value.trim(),
+                studentSeat: document.getElementById('student-seat').value.trim(),
+                photo: base64PhotoData,
+                photoName: uploadedPhotoName,
+                marketDesc: document.getElementById('market-description').value.trim(),
+                checkedFishes: checkedFishes,
+                otherFishes: document.getElementById('other-fishes-input').value.trim(),
+                momFish: document.getElementById('mom-fish').value.trim(),
+                momColor: document.getElementById('mom-color').value,
+                momWhy: document.getElementById('mom-why').value.trim(),
+                reflection: reflection
+            };
+
+            const overlay = document.getElementById('submitting-overlay');
+            const submitBtn = document.getElementById('form-submit-btn');
+            const prevBtn = document.getElementById('form-prev-btn');
+
+            overlay.classList.remove('hidden');
+            submitBtn.setAttribute('disabled', 'true');
+            prevBtn.setAttribute('disabled', 'true');
+
+            try {
+                // Submit to GAS Web App (supports JSON POST)
+                const response = await fetch(gasUrl, {
+                    method: 'POST',
+                    mode: 'no-cors', 
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(submissionPayload)
+                });
+
+                showCustomAlert("Report Submitted! / 作業已成功送出", "Your field trip discovery report has been compressed and sent back to Google Sheets. Great job, young ocean protector! <br><span class='text-[10px] text-emerald-400'>(您的探訪報告與壓縮照片已成功上傳試算表！表現得太棒了！)</span>", "success");
+                
+                resetAssignmentForm();
+
+            } catch (postError) {
+                console.error("Submission failed:", postError);
+                showCustomAlert("Submission Error / 傳送失敗", "Failed to send data to Apps Script backend. Please verify your internet connection or check GAS setup. <br><span class='text-[10px] text-rose-400'>(傳送至 GAS 發生錯誤，請確認網路或您所設定的 GAS 網址是否正確。)</span>", "error");
+            } finally {
+                overlay.classList.add('hidden');
+                submitBtn.removeAttribute('disabled');
+                prevBtn.removeAttribute('disabled');
+            }
+        }
+
+        function resetAssignmentForm() {
+            document.getElementById('assignment-form').reset();
+            base64PhotoData = "";
+            uploadedPhotoName = "";
+            
+            document.getElementById('upload-placeholder').classList.remove('hidden');
+            document.getElementById('photo-preview-container').classList.add('hidden');
+            document.getElementById('photo-preview').src = "";
+
+            document.getElementById(`form-step-${currentWizardStep}`).classList.add('hidden');
+            document.getElementById('form-step-1').classList.remove('hidden');
+
+            document.getElementById(`step-dot-${currentWizardStep}`).className = "py-1 border-b-4 border-ocean-900 text-[10px] font-bold text-ocean-500 transition-all";
+            document.getElementById('step-dot-1').className = "py-1 border-b-4 border-ocean-500 text-[10px] font-black text-white transition-all";
+
+            currentWizardStep = 1;
+            
+            const prevBtn = document.getElementById('form-prev-btn');
+            const nextBtn = document.getElementById('form-next-btn');
+            const submitBtn = document.getElementById('form-submit-btn');
+
+            prevBtn.classList.add('invisible');
+            nextBtn.classList.remove('hidden');
+            submitBtn.classList.add('hidden');
+
+            switchTab('directory');
+        }
+    </script>
+</body>
+</html>
